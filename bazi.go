@@ -1,13 +1,16 @@
 package bazi
 
-import "fmt"
+import (
+	"encoding/json"
+	"fmt"
+)
 
 // NewBazi 新建八字
 func NewBazi(pSolarDate *TSolarDate, nSex int) *TBazi {
 	//
 	pBazi := &TBazi{
-		pSolarDate: pSolarDate,
-		nSex:       nSex,
+		PSolarDate: pSolarDate,
+		NSex:       nSex,
 	}
 	return pBazi.init()
 }
@@ -15,8 +18,8 @@ func NewBazi(pSolarDate *TSolarDate, nSex int) *TBazi {
 // NewBaziFromLunarDate 新建八字 从农历
 func NewBaziFromLunarDate(pLunarDate *TLunarDate, nSex int) *TBazi {
 	pBazi := &TBazi{
-		pLunarDate: pLunarDate,
-		nSex:       nSex,
+		PLunarDate: pLunarDate,
+		NSex:       nSex,
 	}
 
 	return pBazi.init()
@@ -35,20 +38,20 @@ func GetBazi(nYear, nMonth, nDay, nHour, nMinute, nSecond, nSex int) *TBazi {
 
 // TBazi 八字大类
 type TBazi struct {
-	pSolarDate *TSolarDate // 新历的日期
-	pLunarDate *TLunarDate // 农历日期
-	pBaziDate  *TBaziDate  // 八字历
-	pSiZhu     *TSiZhu     // 四柱嗯
-	nSex       int         // 性别1男其他女
-	pDaYun     *TDaYun     // 大运
-	pQiYunDate *TSolarDate // 起运时间XX年XX月开始起运
+	PSolarDate *TSolarDate `json:"pSolarDate"` // 新历的日期
+	PLunarDate *TLunarDate `json:"pLunarDate"` // 农历日期
+	PBaziDate  *TBaziDate  `json:"pBaziDate"`  // 八字历
+	PSiZhu     *TSiZhu     `json:"pSiZhu"`     // 四柱嗯
+	NSex       int         `json:"nSex"`       // 性别1男其他女
+	PDaYun     *TDaYun     `json:"pDaYun"`     // 大运
+	PQiYunDate *TSolarDate `json:"pQiYunDate"` // 起运时间XX年XX月开始起运
 }
 
 // 八字初始化
 func (self *TBazi) init() *TBazi {
 	// 1. 新农互转
-	if self.pSolarDate == nil {
-		if self.pLunarDate == nil {
+	if self.PSolarDate == nil {
+		if self.PLunarDate == nil {
 			return nil
 		}
 
@@ -56,29 +59,40 @@ func (self *TBazi) init() *TBazi {
 		// self.pSolarDate = self.pLunarDate
 	} else {
 		// todo 这里进行新农互转
-		self.pLunarDate = self.pSolarDate.ToLunarDate()
+		self.PLunarDate = self.PSolarDate.ToLunarDate()
 	}
 
 	// 1. 拿到新历的情况下, 需要计算八字历
-	self.pBaziDate = self.pSolarDate.ToBaziDate()
+	self.PBaziDate = self.PSolarDate.ToBaziDate()
 
 	// 2. 根据八字历, 准备计算四柱了
-	self.pSiZhu = NewSiZhu(self.pSolarDate, self.pBaziDate)
+	self.PSiZhu = NewSiZhu(self.PSolarDate, self.PBaziDate)
 
 	// 3. 计算大运
-	self.pDaYun = NewDaYun(self.pSiZhu, self.nSex)
+	self.PDaYun = NewDaYun(self.PSiZhu, self.NSex)
 
 	// 4. 计算起运时间
-	self.pQiYunDate = NewQiYun(self.pDaYun.ShunNi(), self.pBaziDate.PreviousJie().ToSolarDate(), self.pBaziDate.NextJie().ToSolarDate(), self.pSolarDate)
+	self.PQiYunDate = NewQiYun(self.PDaYun.ShunNi(), self.PBaziDate.PreviousJie().ToSolarDate(), self.PBaziDate.NextJie().ToSolarDate(), self.PSolarDate)
 
 	return self
 }
 
 func (self *TBazi) String() string {
-	return fmt.Sprintf("%v\n %v\n %v\n%v\n%v \n起运时间%v", self.pSolarDate, self.pLunarDate, self.pBaziDate, self.pSiZhu, self.pDaYun, self.pQiYunDate)
+	return fmt.Sprintf("%v\n %v\n %v\n%v\n%v \n起运时间%v", self.PSolarDate, self.PLunarDate, self.PBaziDate, self.PSiZhu, self.PDaYun, self.PQiYunDate)
+}
+
+func (self *TBazi) Data() string {
+	return ObjecToString(self)
 }
 
 // SiZhu 四柱
 func (self *TBazi) SiZhu() *TSiZhu {
-	return self.pSiZhu
+	return self.PSiZhu
+}
+
+func ObjecToString(obj interface{}) string {
+
+	jsonByte, _ := json.MarshalIndent(obj, "", " ")
+	jsonStr := string(jsonByte)
+	return jsonStr
 }

@@ -4,12 +4,12 @@ import "fmt"
 
 // TZhu 柱
 type TZhu struct {
-	pGanZhi  *TGanZhi  // 干支
-	pGan     *TGan     // 天干
-	pZhi     *TZhi     // 地支
-	pCangGan *TCangGan // 藏干
-	pShiShen *TShiShen // 十神
-	nDayGan  int       // 日干值
+	pGanZhi  *TGanZhi  `json:"pGanZhi"`  // 干支
+	pGan     *TGan     `json:"pGan"`     // 天干
+	pZhi     *TZhi     `json:"pZhi"`     // 地支
+	pCangGan *TCangGan `json:"pCangGan"` // 藏干
+	pShiShen *TShiShen `json:"pShiShen"` // 十神
+	nDayGan  int       `json:"nDayGan"`  // 日干值
 }
 
 // NewZhu 新建柱子

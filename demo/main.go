@@ -28,4 +28,6 @@ func main() {
 
 	pBazi := bazi.GetBazi(nYear, nMonth, nDay, nHour, nMinute, nSecond, nSex)
 	fmt.Println(pBazi)
+	fmt.Println(pBazi.Data())
+
 }

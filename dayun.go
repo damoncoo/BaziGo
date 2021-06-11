@@ -11,13 +11,13 @@ func NewDaYun(pSiZhu *TSiZhu, nSex int) *TDaYun {
 
 // TDaYun 大运
 type TDaYun struct {
-	zhuList  [12]*TZhu // 12个大运柱列表
-	isShunNi bool      //  顺转还是逆转(true 顺,  false 逆)
+	ZhuList  [12]*TZhu `json:"zhuList"`  // 12个大运柱列表
+	IsShunNi bool      `json:"isShunNi"` //  顺转还是逆转(true 顺,  false 逆)
 }
 
 func (self *TDaYun) init(pSiZhu *TSiZhu, nSex int) *TDaYun {
 	for i := 0; i < 12; i++ {
-		self.zhuList[i] = NewZhu() // 新建12个柱
+		self.ZhuList[i] = NewZhu() // 新建12个柱
 	}
 
 	// 第一判断年柱的阴阳
@@ -33,11 +33,11 @@ func (self *TDaYun) init(pSiZhu *TSiZhu, nSex int) *TDaYun {
 	//
 	for i := 0; i < 12; i++ {
 		if yinyang.Value() == nSex {
-			self.isShunNi = true
-			self.zhuList[i].genBaseGanZhi((nMonthGanZhi + 61 + i) % 60)
+			self.IsShunNi = true
+			self.ZhuList[i].genBaseGanZhi((nMonthGanZhi + 61 + i) % 60)
 		} else {
-			self.isShunNi = false
-			self.zhuList[i].genBaseGanZhi((nMonthGanZhi + 59 - i) % 60)
+			self.IsShunNi = false
+			self.ZhuList[i].genBaseGanZhi((nMonthGanZhi + 59 - i) % 60)
 
 		}
 	}
@@ -50,7 +50,7 @@ func (self *TDaYun) String() string {
 	strResult := "大运:\n"
 
 	for i := 0; i < 12; i++ {
-		strResult += self.zhuList[i].GanZhi().String() + " "
+		strResult += self.ZhuList[i].GanZhi().String() + " "
 	}
 
 	return strResult
@@ -58,5 +58,5 @@ func (self *TDaYun) String() string {
 
 // ShunNi 顺逆
 func (self *TDaYun) ShunNi() bool {
-	return self.isShunNi
+	return self.IsShunNi
 }
