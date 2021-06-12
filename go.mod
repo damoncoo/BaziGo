@@ -1,3 +1,3 @@
-module github.com/warrially/BaziGo
+module github.com/damoncoo/BaziGo
 
 go 1.13
